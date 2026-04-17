@@ -1,0 +1,522 @@
+
+<style>
+@import url('https://fonts.googleapis.com/css2?family=DM+Mono:wght@300;400;500&family=Syne:wght@400;500;600;700;800&display=swap');
+*{margin:0;padding:0;box-sizing:border-box}
+:root{
+  --bg:#090e0f;--bg2:#0d1516;--bg3:#111c1e;--bg4:#162022;
+  --glass:rgba(255,255,255,0.04);--glass2:rgba(255,255,255,0.07);
+  --border:rgba(255,255,255,0.08);--border2:rgba(0,220,140,0.25);
+  --text:#e8f0ee;--text2:#8a9f9c;--text3:#4d6663;
+  --green:#00dc8c;--green2:#00b872;--green3:rgba(0,220,140,0.12);
+  --blue:#2196f3;--blue2:rgba(33,150,243,0.15);
+  --amber:#f59e0b;--amber2:rgba(245,158,11,0.15);
+  --red:#ef4444;--red2:rgba(239,68,68,0.12);
+  --cyan:#06b6d4;--sw-red:#d0021b;
+  --font-display:'Syne',sans-serif;--font-mono:'DM Mono',monospace;
+}
+body{background:var(--bg);color:var(--text);font-family:var(--font-mono);font-size:12px;line-height:1.5;overflow-x:hidden;min-height:100vh}
+
+/* Header */
+.header{display:flex;align-items:center;justify-content:space-between;padding:14px 24px;background:rgba(9,14,15,0.95);border-bottom:1px solid var(--border);backdrop-filter:blur(20px);position:sticky;top:0;z-index:100}
+.logo{display:flex;align-items:center;gap:12px}
+.logo-mark{width:36px;height:36px;border:1.5px solid var(--green);border-radius:8px;display:flex;align-items:center;justify-content:center;position:relative}
+.logo-mark::before{content:'';position:absolute;inset:3px;border:1px solid rgba(0,220,140,0.3);border-radius:5px}
+.logo-cross{font-size:18px;color:var(--sw-red);font-family:var(--font-display);font-weight:800;line-height:1}
+.logo-text h1{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--text);letter-spacing:0.05em}
+.logo-text p{font-size:10px;color:var(--text3);letter-spacing:0.12em;text-transform:uppercase}
+.header-center{display:flex;align-items:center;gap:20px}
+.status-pill{display:flex;align-items:center;gap:7px;padding:5px 12px;background:var(--glass);border:1px solid var(--border2);border-radius:20px;font-size:10px;color:var(--green);letter-spacing:0.08em;text-transform:uppercase}
+.status-dot{width:6px;height:6px;border-radius:50%;background:var(--green);animation:pulse-dot 2s infinite}
+.net-badge{padding:4px 10px;background:var(--glass);border:1px solid var(--border);border-radius:4px;font-size:9px;color:var(--text2);letter-spacing:0.1em;text-transform:uppercase}
+.header-right{display:flex;align-items:center;gap:12px;font-size:10px;color:var(--text3)}
+.time-display{font-family:var(--font-mono);font-size:13px;color:var(--green);letter-spacing:0.05em}
+
+/* Layout */
+.dashboard{display:grid;grid-template-columns:260px 1fr 220px;grid-template-rows:auto auto;gap:12px;padding:12px;min-height:calc(100vh - 60px)}
+.col-left{display:flex;flex-direction:column;gap:10px}
+.col-center{display:flex;flex-direction:column;gap:10px}
+.col-right{display:flex;flex-direction:column;gap:10px}
+.bottom-row{grid-column:1/-1;display:grid;grid-template-columns:1fr 1fr;gap:12px}
+
+/* Cards */
+.card{background:var(--bg2);border:1px solid var(--border);border-radius:10px;padding:14px;position:relative;overflow:hidden}
+.card::before{content:'';position:absolute;inset:0;background:linear-gradient(135deg,rgba(0,220,140,0.03) 0%,transparent 60%);pointer-events:none}
+.card-header{display:flex;align-items:center;justify-content:space-between;margin-bottom:12px}
+.card-title{font-family:var(--font-display);font-size:10px;font-weight:600;color:var(--text2);letter-spacing:0.15em;text-transform:uppercase}
+.card-badge{font-size:9px;padding:2px 8px;border-radius:3px;text-transform:uppercase;letter-spacing:0.08em}
+.badge-green{background:var(--green3);color:var(--green)}
+.badge-amber{background:var(--amber2);color:var(--amber)}
+.badge-red{background:var(--red2);color:var(--red)}
+.badge-blue{background:var(--blue2);color:var(--blue)}
+
+/* Device cards */
+.device{display:flex;align-items:center;gap:10px;padding:9px 10px;background:var(--glass);border:1px solid var(--border);border-radius:8px;cursor:pointer;transition:all 0.2s;margin-bottom:6px}
+.device:last-child{margin-bottom:0}
+.device:hover{background:var(--glass2);border-color:rgba(0,220,140,0.2)}
+.device.active{border-color:rgba(0,220,140,0.35);background:rgba(0,220,140,0.05)}
+.device.offline{opacity:0.5}
+.device-icon{width:32px;height:32px;border-radius:7px;background:var(--bg3);display:flex;align-items:center;justify-content:center;font-size:15px;flex-shrink:0;position:relative}
+.device.active .device-icon::after{content:'';position:absolute;inset:-1px;border-radius:8px;border:1px solid var(--green);animation:icon-glow 2s infinite}
+.device-info{flex:1;min-width:0}
+.device-name{font-family:var(--font-display);font-size:11px;font-weight:600;color:var(--text);white-space:nowrap;overflow:hidden;text-overflow:ellipsis}
+.device-status{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:1px}
+.device-right{display:flex;flex-direction:column;align-items:flex-end;gap:4px}
+.battery-bar{width:28px;height:5px;background:rgba(255,255,255,0.1);border-radius:2px;overflow:hidden}
+.battery-fill{height:100%;border-radius:2px;transition:width 1s}
+.battery-fill.high{background:var(--green)}
+.battery-fill.mid{background:var(--amber)}
+.battery-fill.low{background:var(--red)}
+
+/* Farm Map */
+.map-container{position:relative;background:var(--bg3);border-radius:8px;overflow:hidden;height:320px}
+.map-bg{position:absolute;inset:0}
+.field{position:absolute;border-radius:4px;transition:opacity 0.5s}
+.field-a{left:10%;top:8%;width:36%;height:40%;background:rgba(0,220,140,0.12);border:1px solid rgba(0,220,140,0.25)}
+.field-b{left:50%;top:8%;width:38%;height:40%;background:rgba(6,182,212,0.1);border:1px solid rgba(6,182,212,0.2)}
+.field-c{left:10%;top:55%;width:24%;height:38%;background:rgba(245,158,11,0.1);border:1px solid rgba(245,158,11,0.2)}
+.field-d{left:38%;top:55%;width:30%;height:38%;background:rgba(0,220,140,0.08);border:1px solid rgba(0,220,140,0.15)}
+.field-e{left:72%;top:55%;width:18%;height:38%;background:rgba(239,68,68,0.08);border:1px solid rgba(239,68,68,0.15)}
+.field-label{position:absolute;top:6px;left:8px;font-size:9px;font-family:var(--font-display);font-weight:600;letter-spacing:0.12em;text-transform:uppercase;opacity:0.7}
+.grid-lines{position:absolute;inset:0;opacity:0.08}
+.agent{position:absolute;width:12px;height:12px;border-radius:50%;cursor:pointer;z-index:10;transition:all 0.1s}
+.agent::before{content:'';position:absolute;inset:-4px;border-radius:50%;border:1px solid currentColor;opacity:0.4;animation:agent-ring 2s infinite}
+.agent::after{content:'';position:absolute;inset:-8px;border-radius:50%;border:1px solid currentColor;opacity:0.15;animation:agent-ring 2s infinite 0.4s}
+.agent-drone{background:var(--cyan);color:var(--cyan)}
+.agent-tractor{background:var(--green);color:var(--green)}
+.agent-robot{background:var(--amber);color:var(--amber)}
+.map-overlay{position:absolute;bottom:10px;left:10px;right:10px;display:flex;align-items:flex-end;justify-content:space-between}
+.map-legend{display:flex;gap:10px;background:rgba(9,14,15,0.8);padding:6px 10px;border-radius:6px;backdrop-filter:blur(10px)}
+.legend-item{display:flex;align-items:center;gap:5px;font-size:9px;color:var(--text2)}
+.legend-dot{width:6px;height:6px;border-radius:50%}
+.sync-badge{background:rgba(9,14,15,0.8);padding:5px 10px;border-radius:6px;font-size:9px;color:var(--text3);display:flex;align-items:center;gap:5px;backdrop-filter:blur(10px)}
+.sync-dot{width:5px;height:5px;border-radius:50%;background:var(--green);animation:pulse-dot 1.5s infinite}
+
+/* Sensor gauges */
+.sensor-grid{display:grid;grid-template-columns:1fr 1fr;gap:8px}
+.gauge{background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.gauge-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.1em;margin-bottom:6px}
+.gauge-value{font-family:var(--font-display);font-size:20px;font-weight:700;line-height:1}
+.gauge-unit{font-size:9px;color:var(--text2);margin-top:2px}
+.gauge-bar{height:3px;background:rgba(255,255,255,0.1);border-radius:1.5px;margin-top:6px;overflow:hidden}
+.gauge-fill{height:100%;border-radius:1.5px;transition:width 1.5s cubic-bezier(0.4,0,0.2,1)}
+.ai-insight{margin-top:10px;padding:8px 10px;background:rgba(6,182,212,0.08);border:1px solid rgba(6,182,212,0.2);border-left:3px solid var(--cyan);border-radius:6px}
+.ai-insight-label{font-size:8px;color:var(--cyan);text-transform:uppercase;letter-spacing:0.12em;margin-bottom:3px}
+.ai-insight-text{font-size:10px;color:var(--text);line-height:1.4}
+
+/* ROI Panel */
+.roi-grid{display:grid;grid-template-columns:repeat(4,1fr);gap:8px;margin-bottom:10px}
+.roi-card{background:var(--glass);border:1px solid var(--border);border-radius:8px;padding:10px;text-align:center}
+.roi-icon{font-size:16px;margin-bottom:4px}
+.roi-value{font-family:var(--font-display);font-size:16px;font-weight:700;color:var(--green);line-height:1.2}
+.roi-label{font-size:9px;color:var(--text3);text-transform:uppercase;letter-spacing:0.08em;margin-top:2px}
+
+/* Control panel */
+.ctrl-grid{display:flex;flex-wrap:wrap;gap:8px;margin-bottom:10px}
+.ctrl-btn{display:flex;align-items:center;gap:7px;padding:8px 14px;background:var(--glass);border:1px solid var(--border);border-radius:7px;cursor:pointer;transition:all 0.18s;font-family:var(--font-mono);font-size:10px;color:var(--text2);letter-spacing:0.06em;text-transform:uppercase;user-select:none}
+.ctrl-btn:hover{background:var(--glass2);border-color:rgba(0,220,140,0.3);color:var(--text)}
+.ctrl-btn:active{transform:scale(0.97)}
+.ctrl-btn.active{background:var(--green3);border-color:var(--border2);color:var(--green)}
+.ctrl-btn.danger{background:var(--red2);border-color:rgba(239,68,68,0.3);color:var(--red)}
+.btn-icon{font-size:13px}
+
+/* Log */
+.log{background:rgba(9,14,15,0.5);border:1px solid var(--border);border-radius:8px;padding:10px;height:120px;overflow-y:auto;font-size:10px}
+.log::-webkit-scrollbar{width:3px}
+.log::-webkit-scrollbar-track{background:transparent}
+.log::-webkit-scrollbar-thumb{background:rgba(255,255,255,0.1);border-radius:2px}
+.log-entry{display:flex;gap:8px;margin-bottom:4px;line-height:1.4}
+.log-time{color:var(--text3);white-space:nowrap;font-size:9px}
+.log-msg{color:var(--text2)}
+.log-msg.ok{color:var(--green)}
+.log-msg.warn{color:var(--amber)}
+.log-msg.err{color:var(--red)}
+
+/* Alerts */
+.alert-item{display:flex;align-items:center;gap:8px;padding:7px 10px;background:var(--amber2);border:1px solid rgba(245,158,11,0.25);border-radius:6px;font-size:10px;color:var(--amber);margin-bottom:5px}
+.alert-item.crit{background:var(--red2);border-color:rgba(239,68,68,0.25);color:var(--red)}
+.alert-icon{font-size:12px;flex-shrink:0}
+
+/* Tooltip popup */
+.toast{position:fixed;bottom:20px;right:20px;background:var(--bg4);border:1px solid var(--border2);border-radius:8px;padding:10px 14px;font-size:11px;color:var(--green);z-index:999;opacity:0;transform:translateY(10px);transition:all 0.3s;pointer-events:none}
+.toast.show{opacity:1;transform:translateY(0)}
+
+/* Animations */
+@keyframes pulse-dot{0%,100%{opacity:1;box-shadow:0 0 0 0 rgba(0,220,140,0.4)}50%{opacity:0.7}70%{box-shadow:0 0 0 5px rgba(0,220,140,0)}}
+@keyframes agent-ring{0%{transform:scale(1);opacity:0.4}100%{transform:scale(2.2);opacity:0}}
+@keyframes icon-glow{0%,100%{opacity:0.6}50%{opacity:1}}
+@keyframes fade-in-up{from{opacity:0;transform:translateY(6px)}to{opacity:1;transform:translateY(0)}}
+@keyframes scan{0%{transform:translateY(-100%)}100%{transform:translateY(400%)}}
+.scan-line{position:absolute;left:0;right:0;height:1px;background:linear-gradient(90deg,transparent,rgba(0,220,140,0.3),transparent);animation:scan 4s linear infinite;pointer-events:none;z-index:5}
+</style>
+
+<h2 class="sr-only" style="position:absolute;width:1px;height:1px;overflow:hidden;clip:rect(0,0,0,0)">SwissFarmer 4.0 — Smart Farm Control Center powered by Swisscom IoT</h2>
+
+<!-- Toast -->
+<div class="toast" id="toast"></div>
+
+<!-- Header -->
+<div class="header">
+  <div class="logo">
+    <div class="logo-mark"><span class="logo-cross">✦</span></div>
+    <div class="logo-text">
+      <h1>SwissFarmer 4.0</h1>
+      <p>Powered by Swisscom</p>
+    </div>
+  </div>
+  <div class="header-center">
+    <div class="status-pill"><span class="status-dot"></span>System Connected</div>
+    <div class="net-badge">5G ▸ Active</div>
+    <div class="net-badge">IoT ▸ Online</div>
+  </div>
+  <div class="header-right">
+    <span style="color:var(--text3);font-size:9px">SWISSCOM CLOUD SYNC</span>
+    <span style="color:var(--green);font-size:9px">● LIVE</span>
+    <span class="time-display" id="clock">--:--:--</span>
+  </div>
+</div>
+
+<!-- Dashboard Grid -->
+<div class="dashboard">
+
+  <!-- LEFT: Devices -->
+  <div class="col-left">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Connected Devices</span>
+        <span class="card-badge badge-green">5 / 5 Online</span>
+      </div>
+      <div class="device active" onclick="activateDevice('drone')" id="dev-drone">
+        <div class="device-icon">🚁</div>
+        <div class="device-info">
+          <div class="device-name">Aerial Drone</div>
+          <div class="device-status" id="drone-status">Monitoring · Field A</div>
+        </div>
+        <div class="device-right">
+          <span class="card-badge badge-green" id="drone-badge">Active</span>
+          <div class="battery-bar"><div class="battery-fill high" style="width:87%"></div></div>
+        </div>
+      </div>
+      <div class="device active" onclick="activateDevice('tractor')" id="dev-tractor">
+        <div class="device-icon">🚜</div>
+        <div class="device-info">
+          <div class="device-name">Auto Tractor</div>
+          <div class="device-status" id="tractor-status">Idle · Field B</div>
+        </div>
+        <div class="device-right">
+          <span class="card-badge badge-amber" id="tractor-badge">Idle</span>
+          <div class="battery-bar"><div class="battery-fill high" style="width:94%"></div></div>
+        </div>
+      </div>
+      <div class="device active" onclick="activateDevice('robot')" id="dev-robot">
+        <div class="device-icon">🤖</div>
+        <div class="device-info">
+          <div class="device-name">Robot Harvester</div>
+          <div class="device-status" id="robot-status">Harvesting · Row 12</div>
+        </div>
+        <div class="device-right">
+          <span class="card-badge badge-green" id="robot-badge">Working</span>
+          <div class="battery-bar"><div class="battery-fill mid" style="width:52%"></div></div>
+        </div>
+      </div>
+      <div class="device active" onclick="activateDevice('irrigation')" id="dev-irrigation">
+        <div class="device-icon">💧</div>
+        <div class="device-info">
+          <div class="device-name">Irrigation System</div>
+          <div class="device-status" id="irrigation-status">Active · Zone 3</div>
+        </div>
+        <div class="device-right">
+          <span class="card-badge badge-green" id="irrigation-badge">Active</span>
+          <div class="battery-bar"><div class="battery-fill high" style="width:100%" style="background:var(--cyan)"></div></div>
+        </div>
+      </div>
+      <div class="device active" onclick="activateDevice('greenhouse')" id="dev-greenhouse">
+        <div class="device-icon">🌿</div>
+        <div class="device-info">
+          <div class="device-name">Greenhouse Unit</div>
+          <div class="device-status" id="greenhouse-status">Climate control · ON</div>
+        </div>
+        <div class="device-right">
+          <span class="card-badge badge-green" id="greenhouse-badge">Stable</span>
+          <div class="battery-bar"><div class="battery-fill high" style="width:78%"></div></div>
+        </div>
+      </div>
+    </div>
+
+    <!-- Alerts -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Active Alerts</span>
+        <span class="card-badge badge-amber" id="alert-count">2 Alerts</span>
+      </div>
+      <div id="alerts-list">
+        <div class="alert-item"><span class="alert-icon">⚠</span>Soil moisture low — Field B sector 2</div>
+        <div class="alert-item"><span class="alert-icon">⚠</span>Robot Harvester battery at 52%</div>
+      </div>
+    </div>
+  </div>
+
+  <!-- CENTER: Farm Map -->
+  <div class="col-center">
+    <div class="card" style="flex:1">
+      <div class="card-header">
+        <span class="card-title">Farm Map — Live View</span>
+        <div style="display:flex;gap:6px">
+          <span class="card-badge badge-blue">GPS Lock</span>
+          <span class="card-badge badge-green">Real-time</span>
+        </div>
+      </div>
+      <div class="map-container" id="farm-map">
+        <div class="scan-line"></div>
+        <!-- Grid -->
+        <svg class="grid-lines" style="position:absolute;inset:0;width:100%;height:100%" viewBox="0 0 500 320" preserveAspectRatio="none">
+          <defs><pattern id="grid" width="40" height="40" patternUnits="userSpaceOnUse"><path d="M40 0L0 0 0 40" fill="none" stroke="rgba(0,220,140,0.6)" stroke-width="0.5"/></pattern></defs>
+          <rect width="100%" height="100%" fill="url(#grid)"/>
+        </svg>
+        <!-- Fields -->
+        <div class="field field-a"><span class="field-label" style="color:var(--green)">Field A</span></div>
+        <div class="field field-b"><span class="field-label" style="color:var(--cyan)">Field B</span></div>
+        <div class="field field-c"><span class="field-label" style="color:var(--amber)">Field C</span></div>
+        <div class="field field-d"><span class="field-label" style="color:var(--green)">Field D</span></div>
+        <div class="field field-e"><span class="field-label" style="color:var(--red)">Field E</span></div>
+        <!-- Agents -->
+        <div class="agent agent-drone" id="map-drone" style="left:22%;top:18%;transform:translate(-50%,-50%)" title="Drone"></div>
+        <div class="agent agent-tractor" id="map-tractor" style="left:62%;top:25%;transform:translate(-50%,-50%)" title="Tractor"></div>
+        <div class="agent agent-robot" id="map-robot" style="left:44%;top:68%;transform:translate(-50%,-50%)" title="Robot Harvester"></div>
+        <!-- Map Overlay -->
+        <div class="map-overlay">
+          <div class="map-legend">
+            <div class="legend-item"><div class="legend-dot" style="background:var(--cyan)"></div>Drone</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--green)"></div>Tractor</div>
+            <div class="legend-item"><div class="legend-dot" style="background:var(--amber)"></div>Harvester</div>
+          </div>
+          <div class="sync-badge"><span class="sync-dot"></span>Connected via Swisscom IoT</div>
+        </div>
+      </div>
+    </div>
+  </div>
+
+  <!-- RIGHT: Sensors -->
+  <div class="col-right">
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Sensor Intelligence</span>
+        <span class="card-badge badge-blue">Auto-refresh</span>
+      </div>
+      <div class="sensor-grid">
+        <div class="gauge">
+          <div class="gauge-label">Soil Moisture</div>
+          <div class="gauge-value" id="s-moisture" style="color:var(--cyan)">42</div>
+          <div class="gauge-unit">%</div>
+          <div class="gauge-bar"><div class="gauge-fill" id="sb-moisture" style="width:42%;background:var(--cyan)"></div></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">Temperature</div>
+          <div class="gauge-value" id="s-temp" style="color:var(--amber)">24</div>
+          <div class="gauge-unit">°C</div>
+          <div class="gauge-bar"><div class="gauge-fill" id="sb-temp" style="width:48%;background:var(--amber)"></div></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">Water Level</div>
+          <div class="gauge-value" id="s-water" style="color:var(--green)">78</div>
+          <div class="gauge-unit">%</div>
+          <div class="gauge-bar"><div class="gauge-fill" id="sb-water" style="width:78%;background:var(--green)"></div></div>
+        </div>
+        <div class="gauge">
+          <div class="gauge-label">Humidity</div>
+          <div class="gauge-value" id="s-humidity" style="color:var(--blue)">61</div>
+          <div class="gauge-unit">%</div>
+          <div class="gauge-bar"><div class="gauge-fill" id="sb-humidity" style="width:61%;background:var(--blue)"></div></div>
+        </div>
+      </div>
+      <div class="ai-insight" id="ai-insight">
+        <div class="ai-insight-label">⚡ AI Insight</div>
+        <div class="ai-insight-text" id="ai-text">Irrigation recommended in Field B — moisture below threshold</div>
+      </div>
+    </div>
+
+    <!-- 5G Status -->
+    <div class="card" style="padding:12px">
+      <div class="card-title" style="margin-bottom:8px">Network Status</div>
+      <div style="display:flex;flex-direction:column;gap:5px;font-size:10px">
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">5G Signal</span><span style="color:var(--green)">████████░░ 82%</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Latency</span><span style="color:var(--green)">8 ms</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">LPWAN Nodes</span><span style="color:var(--text)">12 / 12</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Cloud Sync</span><span style="color:var(--cyan)">Active</span></div>
+        <div style="display:flex;justify-content:space-between"><span style="color:var(--text3)">Data today</span><span style="color:var(--text)">2.4 GB</span></div>
+      </div>
+    </div>
+  </div>
+
+  <!-- BOTTOM ROW -->
+  <div class="bottom-row">
+    <!-- Control Panel -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Control Panel</span>
+        <span style="font-size:9px;color:var(--text3)">5G Network: Active · Data synced to Swisscom Cloud</span>
+      </div>
+      <div class="ctrl-grid">
+        <div class="ctrl-btn" onclick="sendCmd('drone')"><span class="btn-icon">🚁</span> Start Drone</div>
+        <div class="ctrl-btn" onclick="sendCmd('robot')"><span class="btn-icon">🤖</span> Deploy Robot</div>
+        <div class="ctrl-btn" onclick="sendCmd('irrigation')"><span class="btn-icon">💧</span> Activate Irrigation</div>
+        <div class="ctrl-btn" onclick="sendCmd('tractor')"><span class="btn-icon">🚜</span> Start Tractor</div>
+        <div class="ctrl-btn danger" onclick="sendCmd('pause')"><span class="btn-icon">⏸</span> Pause System</div>
+      </div>
+      <div class="log" id="system-log">
+        <div class="log-entry"><span class="log-time">08:14:02</span><span class="log-msg ok">System initialized — Swisscom IoT backbone connected</span></div>
+        <div class="log-entry"><span class="log-time">08:14:08</span><span class="log-msg ok">Drone online — Field A monitoring active</span></div>
+        <div class="log-entry"><span class="log-time">08:15:22</span><span class="log-msg ok">Irrigation Zone 3 activated</span></div>
+        <div class="log-entry"><span class="log-time">08:17:45</span><span class="log-msg ok">Robot Harvester — Row 12 in progress</span></div>
+        <div class="log-entry"><span class="log-time">08:21:03</span><span class="log-msg warn">Field B moisture below 40% — AI alert triggered</span></div>
+      </div>
+    </div>
+
+    <!-- ROI Panel -->
+    <div class="card">
+      <div class="card-header">
+        <span class="card-title">Value Intelligence</span>
+        <span class="card-badge badge-green">Today</span>
+      </div>
+      <div class="roi-grid">
+        <div class="roi-card"><div class="roi-icon">💧</div><div class="roi-value" id="roi-water">18%</div><div class="roi-label">Water Saved</div></div>
+        <div class="roi-card"><div class="roi-icon">🌱</div><div class="roi-value" id="roi-yield">+12%</div><div class="roi-label">Yield Efficiency</div></div>
+        <div class="roi-card"><div class="roi-icon">⏱</div><div class="roi-value" id="roi-time">4.5h</div><div class="roi-label">Time Saved / Wk</div></div>
+        <div class="roi-card"><div class="roi-icon">⚡</div><div class="roi-value" id="roi-co2">−9%</div><div class="roi-label">CO₂ Reduction</div></div>
+      </div>
+      <div style="padding:8px 10px;background:rgba(0,220,140,0.05);border:1px solid rgba(0,220,140,0.15);border-radius:8px;font-size:10px;color:var(--text2);line-height:1.6">
+        <span style="color:var(--green);font-weight:600">Swisscom IoT Platform</span> — 12 sensors · 5 devices · 3 active fields<br>
+        <span style="color:var(--text3)">Est. annual savings: CHF 4,200 · Carbon offset: 1.2t CO₂</span>
+      </div>
+    </div>
+  </div>
+
+</div>
+
+<script>
+// Clock
+function updateClock(){
+  const now = new Date();
+  document.getElementById('clock').textContent = now.toLocaleTimeString('de-CH',{hour12:false});
+}
+updateClock();
+setInterval(updateClock,1000);
+
+// Toast
+function showToast(msg){
+  const t = document.getElementById('toast');
+  t.textContent = msg;
+  t.classList.add('show');
+  setTimeout(()=>t.classList.remove('show'),2800);
+}
+
+// Log
+function addLog(msg, type=''){
+  const log = document.getElementById('system-log');
+  const now = new Date();
+  const time = now.toLocaleTimeString('de-CH',{hour12:false});
+  const entry = document.createElement('div');
+  entry.className = 'log-entry';
+  entry.style.animation = 'fade-in-up 0.3s ease';
+  entry.innerHTML = `<span class="log-time">${time}</span><span class="log-msg ${type}">${msg}</span>`;
+  log.appendChild(entry);
+  log.scrollTop = log.scrollHeight;
+}
+
+// Device interaction
+const deviceStates = {drone:'active',tractor:'idle',robot:'working',irrigation:'active',greenhouse:'stable'};
+function activateDevice(id){
+  const states = ['active','idle','working'];
+  const newState = states[Math.floor(Math.random()*states.length)];
+  deviceStates[id] = newState;
+  showToast(`✦ Device updated: ${id.replace('-',' ')}`);
+  addLog(`Device ${id} status queried via Swisscom IoT`, 'ok');
+}
+
+// Commands
+const cmdMessages = {
+  drone:['Drone launched — streaming to Field A','Drone altitude 45m · GPS lock confirmed','Aerial scan initiated · Field A coverage 100%'],
+  robot:['Robot Harvester deployed — Row 14','Harvesting sequence active · Speed: 0.4m/s','Robot arm calibrated — yield sensor online'],
+  irrigation:['Irrigation activated — Zone 3 & 4','Water flow: 2.4L/min · Coverage: 85%','Smart irrigation running — moisture target 65%'],
+  tractor:['Autonomous Tractor started — Field B','Route computed · 3.2 km path loaded','Tractor GPS navigation active — obstacle clear'],
+  pause:['⚠ System pause requested — confirming...','All active devices entering standby mode','System paused — resuming in 30s via Swisscom Cloud']
+};
+function sendCmd(type){
+  const msgs = cmdMessages[type];
+  const msg = msgs[Math.floor(Math.random()*msgs.length)];
+  const logType = type==='pause'?'warn':'ok';
+  addLog(msg, logType);
+  showToast('✦ Command sent via 5G');
+  const btn = event.target.closest('.ctrl-btn');
+  if(btn){btn.classList.add('active');setTimeout(()=>btn.classList.remove('active'),1200);}
+  updateROI();
+}
+
+// Sensor simulation
+const sensors = {moisture:[38,45,52,60,44,39,55],temp:[22,24,25,23,26,24,22],water:[75,78,82,79,76,80,77],humidity:[58,61,65,62,59,63,60]};
+const aiInsights = [
+  'Irrigation recommended in Field B — moisture below threshold',
+  'Optimal harvest window: next 2h — low wind forecast',
+  'Soil temp rising — reduce tractor speed in Field C',
+  'Water reserves at 78% — sufficient for 3-day forecast',
+  'Drone coverage gap detected in Field D north edge',
+  'Yield model predicts +14% output this week'
+];
+let sensorTick = 0;
+function updateSensors(){
+  sensorTick++;
+  const m = sensors.moisture[sensorTick%sensors.moisture.length];
+  const t = sensors.temp[sensorTick%sensors.temp.length];
+  const w = sensors.water[sensorTick%sensors.water.length];
+  const h = sensors.humidity[sensorTick%sensors.humidity.length];
+  document.getElementById('s-moisture').textContent = m;
+  document.getElementById('sb-moisture').style.width = m+'%';
+  document.getElementById('s-temp').textContent = t;
+  document.getElementById('sb-temp').style.width = (t/50*100)+'%';
+  document.getElementById('s-water').textContent = w;
+  document.getElementById('sb-water').style.width = w+'%';
+  document.getElementById('s-humidity').textContent = h;
+  document.getElementById('sb-humidity').style.width = h+'%';
+  if(m < 42){
+    document.getElementById('ai-text').textContent = aiInsights[0];
+    if(sensorTick % 5 === 0) addLog('Moisture alert: Field B at '+m+'% — AI recommends irrigation','warn');
+  } else {
+    document.getElementById('ai-text').textContent = aiInsights[sensorTick % aiInsights.length];
+  }
+}
+setInterval(updateSensors, 4000);
+
+// Agent movement on map
+let agentPositions = {
+  drone:{x:22,y:18,dx:0.3,dy:0.2},
+  tractor:{x:62,y:25,dx:-0.2,dy:0.15},
+  robot:{x:44,y:68,dx:0.25,dy:-0.1}
+};
+function moveAgents(){
+  for(const [id,pos] of Object.entries(agentPositions)){
+    pos.x += pos.dx + (Math.random()-0.5)*0.3;
+    pos.y += pos.dy + (Math.random()-0.5)*0.3;
+    if(pos.x < 12 || pos.x > 88) pos.dx *= -1;
+    if(pos.y < 8 || pos.y > 90) pos.dy *= -1;
+    const el = document.getElementById('map-'+id);
+    if(el){el.style.left=Math.round(pos.x)+'%';el.style.top=Math.round(pos.y)+'%';}
+  }
+}
+setInterval(moveAgents, 1200);
+
+// ROI updates
+const roiValues = {water:['16%','18%','19%','17%','21%'],yield:['+11%','+12%','+13%','+12%','+14%'],time:['4.2h','4.5h','4.8h','4.3h','5.0h'],co2:['−8%','−9%','−10%','−9%','−11%']};
+let roiTick = 0;
+function updateROI(){
+  roiTick++;
+  document.getElementById('roi-water').textContent = roiValues.water[roiTick%roiValues.water.length];
+  document.getElementById('roi-yield').textContent = roiValues.yield[roiTick%roiValues.yield.length];
+  document.getElementById('roi-time').textContent = roiValues.time[roiTick%roiValues.time.length];
+  document.getElementById('roi-co2').textContent = roiValues.co2[roiTick%roiValues.co2.length];
+}
+setInterval(updateROI, 12000);
+
+// Boot sequence log
+setTimeout(()=>addLog('5G network handshake complete — Swisscom tower CH-ZH-04','ok'), 1500);
+setTimeout(()=>addLog('Sensor array online — 12 nodes active','ok'), 3000);
+setTimeout(()=>addLog('AI engine ready — agronomy model v2.4 loaded','ok'), 5000);
+</script>
